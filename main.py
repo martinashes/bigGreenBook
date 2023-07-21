@@ -46,7 +46,8 @@ def get_content(soup):
 
 
 def get_picture(soup, folder_name):
-    for p in soup.find_all('p', itemprop='description'):
+    soup = soup.find('article')
+    for p in soup.find_all('a'):
         # 查找节点下的所有<img>标签
         images = p.find_all('img')
         for img in images:
@@ -69,9 +70,9 @@ def get_article_list(url, pages):
     links = []
 
     for j in range(1, pages):
-        url = format_url(j, url)
+        formated_url = format_url(j, url)
         # 发送HTTP请求并获取页面内容
-        response = requests.get(url, headers=headers)
+        response = requests.get(formated_url, headers=headers)
         html_content = response.content
 
         # 使用BeautifulSoup解析页面内容
@@ -101,16 +102,18 @@ def format_selector(i):
 
 # 循环拼接url
 def format_url(i, url):
-    url = url + str(i)
+    url = url + str(i) + '/'
     return url
 
 
 def main():
     url = "https://post.smzdm.com/tab/ribai/p"
-    links = get_article_list(url, 3)
+    # 每页20篇
+    links = get_article_list(url, 6)
 
-    for i in range(len(links)):
+    for i in range(34, len(links)):
         get_article_content(links[i], i)
+        print('\r', i, end="", flush=True)
 
 
 main()
